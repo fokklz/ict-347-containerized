@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  skiservice:
+    image: fokklz/skiservice-api:latest
+    volumes:
+      - skiservice_logs:/Logs
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
+      - CORS__AllowedOrigins=${ALLOWED_ORIGINS}
+    ports:
+      - "10000:8080"
+    depends_on:
+      - mssql
+
+volumes:
+  mssql_data: {}
+  skiservice_logs: {}
